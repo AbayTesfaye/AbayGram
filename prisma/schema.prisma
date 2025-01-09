@@ -12,3 +12,44 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  clerkId   String   @unique
+  name      String?
+  bio       String?
+  image     String?
+  location  String?
+  website   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  // Relationships
+  posts     Post[]
+  comments  Comment[]
+  likes     Like[]
+
+  followers Follows[] @relation("Followers")
+  following Follows[] @relation("Following")
+
+  notifications Notification[] @relation("userNotifications")
+  notificationsCreated Notification[] @relation("notificationsCreated")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  authorId     String
+  content   String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  author    User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  likes     Like[]
+  notifications Notification[]
+}
