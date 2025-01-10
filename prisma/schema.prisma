@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -26,8 +20,6 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-
-  // Relationships
   posts     Post[]
   comments  Comment[]
   likes     Like[]
@@ -35,21 +27,83 @@ model User {
   followers Follows[] @relation("Followers")
   following Follows[] @relation("Following")
 
-  notifications Notification[] @relation("userNotifications")
-  notificationsCreated Notification[] @relation("notificationsCreated")
+  notifications          Notification[] @relation("userNotifications")
+  notificationsCreated   Notification[] @relation("notificationsCreated")
 }
 
 model Post {
   id        String   @id @default(cuid())
-  authorId     String
+  authorId  String
   content   String?
   image     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relationships
   author    User @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments  Comment[]
   likes     Like[]
   notifications Notification[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  authorId  String
+  postId    String
+  content   String?
+  createdAt DateTime @default(now())
+
+  author    User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post      Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  notifications Notification[]
+
+  @@index([authorId, postId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([userId, postId])
+  @@unique([userId, postId]) // A user can only like a post once
+}
+
+model Follows {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("Followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@index([followerId, followingId])
+  @@id([followerId, followingId]) // A user can only follow another user once
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  creatorId String
+  postId    String?
+  commentId String?
+  type      NotificationType
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User    @relation("userNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  creator   User    @relation("notificationsCreated", fields: [creatorId], references: [id], onDelete: Cascade)
+  post      Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  FOLLOW
 }
