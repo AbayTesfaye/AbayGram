@@ -1,6 +1,6 @@
 "use client";
 
-// import { createComment, deletePost, getPosts, toggleLike } from "@/action/post.action";
+import { createComment, deletePost, getPosts, toggleLike } from "@/action/post.action";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import toast from "react-hot-toast";
