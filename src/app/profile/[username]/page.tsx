@@ -6,7 +6,6 @@ import {
 } from "@/action/profile.action";
 import { notFound } from "next/navigation";
 import ProfilePageClient from "./ProfilePageClient";
-import { GetServerSidePropsContext } from "next";
 
 // Correct typing for `params` to ensure Next.js understands the dynamic route
 export async function generateMetadata({ params }: { params: { username: string } }) {
@@ -19,15 +18,15 @@ export async function generateMetadata({ params }: { params: { username: string 
   };
 }
 
-// Correct typing for `params` to avoid treating it as a Promise
-async function ProfilePageServer({ params }: GetServerSidePropsContext) {
-  const { username } = params as { username: string }; // Explicitly cast params to the expected shape
+// Corrected function signature (no need for GetServerSidePropsContext)
+async function ProfilePageServer({ params }: { params: { username: string } }) {
+  const { username } = params;
 
   const user = await getProfileByUsername(username);
 
   if (!user) notFound();
 
-  const [posts, likedPosts, isCurrentUserFollowing] = await Promise.all([
+  const [posts, likedPosts, isCurrentUserFollowing] = await Promise.all([ 
     getUserPosts(user.id),
     getUserLikedPosts(user.id),
     isFollowing(user.id),
