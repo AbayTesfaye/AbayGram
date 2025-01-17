@@ -9,6 +9,8 @@ import { Button } from "./ui/button";
 import { ImageIcon, Loader2Icon, SendIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { createPost } from "@/action/post.action";
+import ImageUpload from "./ImageUpload";
+
 
 function CreatePost() {
   const { user } = useUser();
@@ -62,10 +64,14 @@ function CreatePost() {
 
           {(showImageUpload || imageUrl) && (
             <div className="border rounded-lg p-4">
-              <p className="text-muted-foreground text-sm">
-                Image upload functionality coming soon.
-              </p>
-              {/* Replace this with ImageUpload component */}
+             <ImageUpload
+             endpoint="postImage"
+             value={imageUrl}
+             onChange ={(url) => {
+               setImageUrl(url)
+               if(!url) setShowImageUpload(false)
+             }}
+             />
             </div>
           )}
 
