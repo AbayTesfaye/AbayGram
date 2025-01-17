@@ -12,6 +12,7 @@ import { DeleteAlertDialog } from "./DeleteAlertDialog";
 import { Button } from "./ui/button";
 import { HeartIcon, LogInIcon, MessageCircleIcon, SendIcon } from "lucide-react";
 import { Textarea } from "./ui/textarea";
+import Image from "next/image";
 
 type Posts = Awaited<ReturnType<typeof getPosts>>;
 type Post = Posts[number];
@@ -32,8 +33,8 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
       setIsLiking(true);
       setHasLiked((prev) => !prev);
       setOptmisticLikes((prev) => prev + (hasLiked ? -1 : 1));
-    //   await toggleLike(post.id);
-    } catch (error) {
+      await toggleLike(post.id);
+    } catch {
       setOptmisticLikes(post._count.likes);
       setHasLiked(post.likes.some((like) => like.userId === dbUserId));
     } finally {
@@ -50,7 +51,7 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
         toast.success("Comment posted successfully");
         setNewComment("");
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to add comment");
     } finally {
       setIsCommenting(false);
@@ -64,7 +65,7 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
       const result = await deletePost(post.id);
       if (result.success) toast.success("Post deleted successfully");
       else throw new Error(result.error);
-    } catch (error) {
+    } catch  {
       toast.error("Failed to delete post");
     } finally {
       setIsDeleting(false);
@@ -110,7 +111,7 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
           {/* POST IMAGE */}
           {post.image && (
             <div className="rounded-lg overflow-hidden">
-              <img src={post.image} alt="Post content" className="w-full h-auto object-cover" />
+              <Image width={800} height={800} src={post.image} alt="Post content" className="w-full h-auto object-cover" />
             </div>
           )}
 
