@@ -1,7 +1,7 @@
 "use client";
 
-import { getProfileByUsername, getUserPosts, updateProfile } from "@/actions/profile.action";
-import { toggleFollow } from "@/actions/user.action";
+import { getProfileByUsername, getUserPosts, updateProfile } from "@/action/profile.action";
+import { toggleFollow } from "@/action/user.action";
 import PostCard from "@/components/PostCard";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
